@@ -11,11 +11,12 @@ module.exports = {
 function postContactsManage (req, res) {
   var Users = req.models.Users
 
-  var mongooseQuery = {}
+  var mongooseQuery = {$or: [{'roles.core': true}, {'roles.coreLead': true}, {'roles.superAdmin': true}]}
 
   Users.find(mongooseQuery, function (err, users) {
     if (err) console.error(err)
     users.forEach(function (user) {
+      console.log(user.username)
       var userInfo = req.body[user.username]
       if (!userInfo.showcontact) {
         user.profile.showcontact = false
