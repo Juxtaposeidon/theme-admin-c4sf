@@ -11,8 +11,7 @@ module.exports = {
 function postContactsManage (req, res) {
   var Users = req.models.Users
 
-  var mongooseQuery = {$or: [{'roles.core': true}, {'roles.coreLead': true}, {'roles.superAdmin': true}]}
-
+  var mongooseQuery = {'username' : {$in : Object.keys(req.body)}}
   Users.find(mongooseQuery, function (err, users) {
     if (err) console.error(err)
     users.forEach(function (user) {
@@ -36,9 +35,9 @@ function postContactsManage (req, res) {
           return res.redirect('contact/edit')
         }
         // save is successfull.
-        req.flash('success', {msg: 'Success! You updated contacts.'})
-        return res.redirect('contact/edit')
       })
     })
   })
+  req.flash('success', {msg: 'Success! You updated contacts.'})
+  return res.redirect('contact/edit')
 }
