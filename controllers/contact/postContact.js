@@ -1,4 +1,3 @@
-var Promise = require('promise');
 module.exports = {
   method: 'post',
   endpoint: '/contact',
@@ -12,17 +11,17 @@ module.exports = {
 function postContactsManage (req, res) {
   var Users = req.models.Users
 
-  var mongooseQuery = {'username' : {$in : Object.keys(req.body)}}
+  var mongooseQuery = {'username': {$in: Object.keys(req.body)}}
   var userPromises = []
 
   Users.find(mongooseQuery, function (err, users) {
     if (err) console.error(err)
     users.forEach(function (user) {
-      userPromises.push(new Promise(function(resolve, reject){
+      userPromises.push(new Promise(function (resolve, reject) {
         var userInfo = req.body[user.username]
         // next iteration if userInfo is null
         if (!userInfo) {
-          reject();
+          reject('No user information found for ' + user.username + '.')
         }
         if (!userInfo.showcontact) {
           user.profile.showcontact = false
@@ -33,22 +32,21 @@ function postContactsManage (req, res) {
         user.save(function (err) {
           if (err) {
             // save failed
-            reject();
+            reject('Saving the user has failed.')
           }
           // save is successfull.
-          resolve();
+          resolve()
         })
       })
       )
     })
-    Promise.all(userPromises).then(function(){
+    Promise.all(userPromises).then(function () {
       req.flash('success', {msg: 'Success! You updated contacts.'})
       return res.redirect('contact/edit')
-    }).catch(function(){
+    }).catch(function (err) {
       req.flash('errors', {msg: 'Error! Your Contacts were not updated. Error: ' + err})
       console.log('User update failed.  Error:' + err)
       return res.redirect('contact/edit')
     })
   })
-
 }
