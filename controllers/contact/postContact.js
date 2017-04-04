@@ -32,7 +32,7 @@ function postContactsManage (req, res) {
         user.save(function (err) {
           if (err) {
             // save failed
-            reject('Saving the user has failed.')
+            reject(err)
           }
           // save is successfull.
           resolve()
